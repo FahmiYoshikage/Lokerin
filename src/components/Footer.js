@@ -51,8 +51,7 @@ const Footer = () => {
       <div>
         <h4>Follow Us</h4>
         <p>
-          Cras fermentum odio eu feugiat lide par naso tierra videa magna derita
-          valies
+          <strong>Github: </strong> FahmiYoshikage 
         </p>
         <div className="social-icons">
           <a href="#">
