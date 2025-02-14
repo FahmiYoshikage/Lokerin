@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const AdminEdit = () => {
-  const { id } = useParams(); // Ambil ID dari URL
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [job, setJob] = useState(null); // Ubah menjadi null agar tidak langsung merender form kosong
+  const [job, setJob] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [posterFile, setPosterFile] = useState(null);
 
   useEffect(() => {
     fetch(`http://localhost:5000/jobs/${id}`)
       .then(response => response.json())
-      .then(data => setJob(data)) // Simpan data dari API ke state
+      .then(data => setJob(data))
       .catch(error => console.error("Error fetching job:", error));
   }, [id]);
 
@@ -17,19 +19,70 @@ const AdminEdit = () => {
     setJob({ ...job, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetch(`http://localhost:5000/jobs/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(job),
-    })
-      .then(() => navigate("/admin")) // Kembali ke halaman admin setelah edit
-      .catch(error => console.error("Error updating job:", error));
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    if (files && files[0]) {
+      const file = files[0];
+      if (name === 'imageFile') {
+        setImageFile(file);
+        setJob(prev => ({ ...prev, image: `/images/${file.name}` }));
+      } else if (name === 'posterFile') {
+        setPosterFile(file);
+        setJob(prev => ({ ...prev, poster: `/images/${file.name}` }));
+      }
+    }
   };
 
-  if (!job) return <p>Loading...</p>; // Pastikan data sudah di-load sebelum menampilkan form
+  const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await fetch('http://localhost:5000/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) throw new Error('Upload failed');
+      return true;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      return false;
+    }
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      if (imageFile) {
+        const imageUploaded = await uploadFile(imageFile);
+        if (!imageUploaded) throw new Error('Image upload failed');
+      }
+      
+      if (posterFile) {
+        const posterUploaded = await uploadFile(posterFile);
+        if (!posterUploaded) throw new Error('Poster upload failed');
+      }
+
+      const response = await fetch(`http://localhost:5000/jobs/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(job),
+      });
+
+      if (response.ok) {
+        alert("Lowongan berhasil diupdate!");
+        navigate("/admin");
+      } else {
+        throw new Error('Failed to update job');
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Terjadi kesalahan saat mengupdate data.");
+    }
+  };
+
+  if (!job) return <p>Loading...</p>;
   return (
     <div className="container mt-4">
       <h2>Edit Job</h2>
@@ -51,8 +104,15 @@ const AdminEdit = () => {
           <textarea name="description" className="form-control" value={job.description} onChange={handleChange} required />
         </div>
         <div className="mb-3">
-          <label className="form-label">Image URL</label>
-          <input type="text" name="image" className="form-control" value={job.image} onChange={handleChange} required />
+          <label className="form-label">Gambar</label>
+          <input 
+            type="file" 
+            className="form-control" 
+            name="imageFile" 
+            onChange={handleFileChange} 
+            accept="image/*"
+          />
+          {job.image && <img src={job.image} alt="Current" className="mt-2" style={{maxWidth: '200px'}} />}
         </div>
         <div className="mb-3">
           <label className="form-label">Link Pendaftaran (Opsional)</label>
@@ -66,15 +126,15 @@ const AdminEdit = () => {
           />
         </div>
         <div className="mb-3">
-          <label className="form-label">URL Poster Pekerjaan</label>
+          <label className="form-label">Poster Pekerjaan</label>
           <input 
-            type="url" 
+            type="file" 
             className="form-control" 
-            name="poster" 
-            value={job.poster} 
-            onChange={handleChange} 
-            required 
+            name="posterFile" 
+            onChange={handleFileChange} 
+            accept="image/*"
           />
+          {job.poster && <img src={job.poster} alt="Current poster" className="mt-2" style={{maxWidth: '200px'}} />}
         </div>
         <button type="submit" className="btn btn-success">Save Changes</button>
         <button type="button" className="btn btn-secondary ms-2" onClick={() => navigate("/admin")}>Cancel</button>

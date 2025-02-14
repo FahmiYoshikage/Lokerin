@@ -17,6 +17,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Body />} />
+        <Route path="/Lokerin" element={<Body />} />
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
         <Route path="/admin" element={<ProtectedRoute isAuthenticated={isAuthenticated} element={<AdminPanel />} />} />
         <Route path="/admin/add" element={<ProtectedRoute isAuthenticated={isAuthenticated} element={<AdminAdd />} />} />

@@ -48,7 +48,7 @@ const Navbar = ({ data, setFilteredData }) => {
       {/*header design start*/}
       <header className="header">
         <a href="/" className="logo">
-          Lokerin.
+          LOKERin.
         </a>
         <nav className="navbar">
           <div className="navbar-icon">
