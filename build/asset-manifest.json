@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Lokerin/static/css/main.a3797a4d.css",
+    "main.js": "/Lokerin/static/js/main.a5a45a39.js",
+    "static/js/488.5dc00adb.chunk.js": "/Lokerin/static/js/488.5dc00adb.chunk.js",
+    "index.html": "/Lokerin/index.html",
+    "main.a3797a4d.css.map": "/Lokerin/static/css/main.a3797a4d.css.map",
+    "main.a5a45a39.js.map": "/Lokerin/static/js/main.a5a45a39.js.map",
+    "488.5dc00adb.chunk.js.map": "/Lokerin/static/js/488.5dc00adb.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a3797a4d.css",
+    "static/js/main.a5a45a39.js"
+  ]
+}
